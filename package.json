@@ -1,0 +1,9 @@
+{
+  "name": "score-web",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45",
+    "axios": "^1.7",
+    "node-xlsx": "^0.23"
+  }
+}
