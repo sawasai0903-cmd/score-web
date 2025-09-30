@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>组内打分</title>
+  <style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:6px}</style>
+</head>
+<body>
+  <h3>组内打分</h3>
+  <button onclick="login()">进入系统</button>
+  <div id="main" style="display:none">
+    <p>你好，<span id="uname"></span>（<span id="grp"></span>）</p>
+    <table id="list"></table>
+  </div>
+  <script>
+    const API = 'https://你的项目.vercel.app/api'
+    let openid = localStorage.getItem('openid')
+    if (openid) { login() }
+
+    function login() {
+      if (!openid) {
+        fetch(API + '/login', { method: 'POST' })
+          .then(r => r.json()).then(d => {
+            openid = d.openid
+            localStorage.setItem('openid', openid)
+            showMain()
+          })
+      } else {
+        showMain()
+      }
+    }
+    function showMain() {
+      document.querySelector('button').style.display = 'none'
+      document.getElementById('main').style.display = 'block'
+      fetch(API + '/user?oid=' + openid).then(r => r.json()).then(u => {
+        document.getElementById('uname').innerText = u.name
+        document.getElementById('grp').innerText = u.grp
+        return fetch(API + '/mates?grp=' + u.grp + '&oid=' + openid)
+      }).then(r => r.json()).then(renderList)
+    }
+    function renderList(arr) {
+      const html = arr.map(m => `<tr><td>${m.name}</td><td><input type="number" min=0 max=100 id="s-${m.id}"></td><td><button onclick="submit('${m.id}')">提交</button></td></tr>`).join('')
+      document.getElementById('list').innerHTML = '<tr><th>同事</th><th>分数</th><th></th></tr>' + html
+    }
+    function submit(toId) {
+      const score = document.getElementById('s-' + toId).value
+      if (!score || score < 0 || score > 100) return alert('分数 0-100')
+      fetch(API + '/submit', { method: 'POST', body: JSON.stringify({ fromId: openid, toId, score }), headers: { 'Content-Type': 'application/json' } })
+        .then(r => r.json()).then(d => d.ok && alert('已提交'))
+    }
+  </script>
+</body>
+</html>
