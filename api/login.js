@@ -1,7 +1,4 @@
-// 匿名登录：浏览器自己生成一个 uuid 当 openid
-import { randomUUID } from 'crypto'
-
-export default async (req, res) => {
-  const fakeOpenId = randomUUID().slice(0, 16) // 16 位随机字符串
-  res.json({ openid: fakeOpenId })
-}
+// 匿名登录：随机挑一个固定用户（映射到 Supabase 里的 id）
+const candidates = ['user_a', 'user_b', 'user_c', 'user_d', 'user_e', 'user_f']
+const pick = candidates[Math.floor(Math.random() * candidates.length)]
+res.json({ openid: pick })
