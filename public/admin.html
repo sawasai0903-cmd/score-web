@@ -10,7 +10,7 @@
   <input id="key" type="password" placeholder="管理员口令">
   <button onclick="exportFile()">生成并下载 Excel</button>
   <script>
-    const API = 'https://你的项目.vercel.app/api'
+    const API = location.origin + '/api'
     function exportFile() {
       const key = document.getElementById('key').value
       fetch(API + '/export', { headers: { 'x-admin-key': key } })
