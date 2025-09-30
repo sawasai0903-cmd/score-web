@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>导出得分</title>
+</head>
+<body>
+  <h3>管理员导出</h3>
+  <input id="key" type="password" placeholder="管理员口令">
+  <button onclick="exportFile()">生成并下载 Excel</button>
+  <script>
+    const API = 'https://你的项目.vercel.app/api'
+    function exportFile() {
+      const key = document.getElementById('key').value
+      fetch(API + '/export', { headers: { 'x-admin-key': key } })
+        .then(r => r.ok ? r.blob() : Promise.reject()).then(blob => {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'score.xlsx'
+          a.click()
+        }).catch(() => alert('口令错误或网络异常'))
+    }
+  </script>
+</body>
+</html>
